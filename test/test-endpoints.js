@@ -54,24 +54,24 @@ describe('Blog Posts', function() {
   });
 
   it('should update blog posts on PUT', function() {
-    const updateData = {title: 'Lets Drink', content: 'Water is good', author: 'SirDrinksALot'};
 
     return chai.request(app)
+      // first have to get
       .get('/blog-posts')
-      .then(function(res) {
-        updateData.id = res.body[0].id;
-        
-      return chai.request(app)
-          .put(`/blog-posts/${updateData.id}`)
-          .send(updateData);
-      })
-
-      .then(function(res) {
-        expect(res).to.have.status(204);;
-        expect(res.body).to.be.a('object');
-        expect(res.body).to.deep.equal(updateData);
+      .then(function( res) {
+        const updatedPost = Object.assign(res.body[0], {
+          title: 'connect the dots',
+          content: 'la la la la la'
+        });
+        return chai.request(app)
+          .put(`/blog-posts/${res.body[0].id}`)
+          .send(updatedPost)
+          .then(function(res) {
+            expect(res).to.have.status(204);
+          });
       });
   });
+
 
   it('should delete items on DELETE', function() {
     return chai.request(app)
